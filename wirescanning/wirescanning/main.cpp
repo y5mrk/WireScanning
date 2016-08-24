@@ -24,7 +24,8 @@ int main (int argc, char *argv[]){
     
     std::vector<std::vector<cv::Point> > contours;
     // 画像の二値化
-    cv::threshold(gray_img, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
+    cv::Mat nega_img = ~gray_img;
+    cv::threshold(nega_img, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
     // 輪郭の検出
     cv::findContours(bin_img, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
     
@@ -47,8 +48,7 @@ int main (int argc, char *argv[]){
             //輪郭に隣接する矩形の取得
             cv::Rect brect = cv::boundingRect(cv::Mat(approx).reshape(2));
             
-            //入力画像に表示する場合
-            cv::drawContours(line_img, contours, i, CV_RGB(0, 255, 0), 4);
+            
             
             //表示
 //            cv::imshow("label" + std::to_string(roiCnt+1), roi[roiCnt]);
@@ -69,6 +69,20 @@ int main (int argc, char *argv[]){
         
         i++;
     }
+    
+    for(int j = 0; j < contours.size(); ++j) {
+        //入力画像に表示する場合
+        cv::drawContours(line_img, contours, j, CV_RGB(0, 0, 0), 1);
+    }
+    
+    // 特徴点検出の準備
+    cv::Ptr<cv::AKAZE> detector = cv::AKAZE::create();
+    
+    // 特徴点の検出
+    std::vector<cv::KeyPoint> keypoints;
+    detector->detect(line_img, keypoints);
+    
+    cv::drawKeypoints(line_img, keypoints, line_img);
     
     cv::namedWindow("fit ellipse", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
     cv::namedWindow("bin image", CV_WINDOW_AUTOSIZE|CV_WINDOW_FREERATIO);
