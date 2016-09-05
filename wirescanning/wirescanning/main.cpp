@@ -13,7 +13,7 @@
 
 int main (int argc, char *argv[]){
     
-    cv::Mat src_img = cv::imread("harigane.JPG");
+    cv::Mat src_img = cv::imread("wire1.JPG");
     if(!src_img.data) return -1;
     
     int width = src_img.cols;
@@ -72,6 +72,8 @@ int main (int argc, char *argv[]){
         i++;
     }
     
+    std::cout << contours[3];
+    
     for(int j = 0; j < contours.size(); ++j) {
         //入力画像に表示する場合
         cv::drawContours(line_img, contours, j, CV_RGB(0, 0, 0), 1);
@@ -93,13 +95,12 @@ int main (int argc, char *argv[]){
     cv::imshow("bin image", bin_img);
     cv::imshow("outline image", line_img);
     
-    // svgファイルの作成
+    std::cout << approx;
+//     svgファイルの作成
     mi::SvgDrawer drawer ( width, height, "test1.svg");
     drawer.setViewBox( -2, -2, 2, 2);
     
-//    for(int p = 0; p < approx.size()-1; ++p) {
-//        drawer.drawLine(approx[p].x * 0.01, approx[p].y * 0.01, approx[p+1].x * 0.01, approx[p+1].y * 0.01);
-//    }
+    drawer.PolyLine(contours[3]);
     
     cv::waitKey(0);
     

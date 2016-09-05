@@ -132,6 +132,23 @@ namespace mi
                         this->_fout<<" stroke-width=\""<<this->_stroke_width<<"\" stroke=\""<<this->_stroke_color<<"\" fill=\""<<this->_fill_color<<"\"/>"<<std::endl;
 
                 }
+            
+                void PolyLine ( const std::vector< cv::Point > polypoints) {
+                    this->_fout<<"<polyline points=\"";
+                    for (int i = 0; i < polypoints.size()-1; ++i){
+                        SvgDrawer::Vector2d v0( polypoints[i].x * 0.01, polypoints[i].y * 0.01 );
+                        this->convert( v0 );
+                        this->_fout<<v0.x<<" "<<v0.y<<",";
+                    }
+                    SvgDrawer::Vector2d v0( polypoints[polypoints.size()-1].x * 0.01, polypoints[polypoints.size()-1].y * 0.01 );
+                    this->convert( v0 );
+                    this->_fout<<v0.x<<" "<<v0.y<<"\"";
+//                    zthis->_fout<<"\"";
+                    if ( this->_stroke_dashed > 0 ) this->_fout<<" stroke-dasharray=\""<<this->_stroke_dashed<<"\"";
+                    this->_fout<<" style=\"fill:none;stroke:"<<this->_stroke_color<<";stroke-width:"<<this->_stroke_width<<";\" />"<<std::endl;
+//                    this->_fout<<" stroke-width=\""<<this->_stroke_width<<"\" stroke=\""<<this->_stroke_color<<"\" />"<<std::endl;
+                    return;
+                }
         private:
                 void convert ( Vector2d& p ) {
                         const double s = ( p.x - this->_bmin.x ) / ( this->_bmax.x - this->_bmin.x ) ;
