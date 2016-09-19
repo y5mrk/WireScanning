@@ -29,6 +29,7 @@ bool CamRead(int, char**){
     // VideoCapture デストラクタにより，カメラは自動的に終了処理されます
     
     cv::imwrite("img.png", frame);
+    cv::destroyAllWindows();
     return true;
 }
 
@@ -36,9 +37,9 @@ bool CamRead(int, char**){
 int main (int argc, char *argv[]){
     
     bool cam;
-//    cam = CamRead(argc,argv);
+    cam = CamRead(argc,argv);
     
-//    if(cam){
+    if(cam){
     cv::Mat src_img = cv::imread("img.png");
     if(!src_img.data) return -1;
     
@@ -128,8 +129,7 @@ int main (int argc, char *argv[]){
     }
         
     cv::waitKey(0);
-    
     return 0;
-//    }
+    }
 }
 
