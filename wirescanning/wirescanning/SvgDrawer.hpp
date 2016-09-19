@@ -149,6 +149,28 @@ namespace mi
 //                    this->_fout<<" stroke-width=\""<<this->_stroke_width<<"\" stroke=\""<<this->_stroke_color<<"\" />"<<std::endl;
                     return;
                 }
+            
+                //スプライン曲線 作りかけ
+                void splineCurve ( const std::vector< cv::Point > polypoints) {
+                    this->_fout<<"<path d=\"";
+                    SvgDrawer::Vector2d v0( polypoints[0].x * 0.01, polypoints[0].y * 0.01 );
+                    this->convert( v0 );
+                    this->_fout<<"M"<<v0.x<<","<<v0.y<<" ";
+
+                    for (int i = 1; i < polypoints.size()-1; ++i){
+                        SvgDrawer::Vector2d v0( polypoints[i].x * 0.01, polypoints[i].y * 0.01 );
+                        this->convert( v0 );
+                        this->_fout<<"T"<<v0.x<<","<<v0.y<<" ";
+                    }
+                    SvgDrawer::Vector2d v1( polypoints[polypoints.size()-1].x * 0.01, polypoints[polypoints.size()-1].y * 0.01 );
+                    this->convert( v1 );
+                    this->_fout<<"T"<<v1.x<<" "<<v1.y<<" z\"";
+                //                    zthis->_fout<<"\"";
+                    if ( this->_stroke_dashed > 0 ) this->_fout<<" stroke-dasharray=\""<<this->_stroke_dashed<<"\"";
+                    this->_fout<<" style=\"fill:none;stroke:"<<this->_stroke_color<<";stroke-width:"<<this->_stroke_width<<";\" />"<<std::endl;
+                //                    this->_fout<<" stroke-width=\""<<this->_stroke_width<<"\" stroke=\""<<this->_stroke_color<<"\" />"<<std::endl;
+                    return;
+                }
         private:
                 void convert ( Vector2d& p ) {
                         const double s = ( p.x - this->_bmin.x ) / ( this->_bmax.x - this->_bmin.x ) ;
