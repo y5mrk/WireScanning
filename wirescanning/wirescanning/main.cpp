@@ -11,8 +11,34 @@
 #include <vector>
 #include "SvgDrawer.hpp"
 
+bool CamRead(int, char**){
+    cv::VideoCapture cap(0); // デフォルトカメラをオープン
+    if(!cap.isOpened())  // 成功したかどうかをチェック
+        return false; // プログラム終了
+    
+    cv::Mat edges;
+    cv::namedWindow("frames",1);
+    cv::Mat frame;
+    for(;;)
+    {
+        cap >> frame; // カメラから新しいフレームを取得
+        
+        imshow("feames", frame);
+        if(cv::waitKey(30) >= 0) break;
+    }
+    // VideoCapture デストラクタにより，カメラは自動的に終了処理されます
+    
+    cv::imwrite("img.png", frame);
+    return true;
+}
+
+
 int main (int argc, char *argv[]){
     
+    bool cam;
+    cam = CamRead(argc,argv);
+    
+    if(cam){
     cv::Mat src_img = cv::imread("wire1.JPG");
     if(!src_img.data) return -1;
     
@@ -105,5 +131,6 @@ int main (int argc, char *argv[]){
     cv::waitKey(0);
     
     return 0;
+    }
 }
 
