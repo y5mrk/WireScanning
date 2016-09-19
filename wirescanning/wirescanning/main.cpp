@@ -9,10 +9,11 @@
 
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include "SvgDrawer.hpp"
 
 int main (int argc, char *argv[]){
     
-    cv::Mat src_img = cv::imread("harigane.JPG");
+    cv::Mat src_img = cv::imread("wire1.JPG");
     if(!src_img.data) return -1;
     
     int width = src_img.cols;
@@ -30,23 +31,24 @@ int main (int argc, char *argv[]){
     cv::findContours(bin_img, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
     
     int i = 0;
+    std::vector< cv::Point > approx;
     
 //    for(int i = 0; i < contours.size(); ++i) {
     for (auto contour = contours.begin(); contour != contours.end(); contour++){
     
-        std::vector< cv::Point > approx;
-        cv::approxPolyDP(cv::Mat(*contour), approx, 0.01 * cv::arcLength(*contour, true), true);
+        cv::approxPolyDP(cv::Mat(*contour), approx, 0.001 * cv::arcLength(*contour, true), true);
         double area = cv::contourArea(approx);
         
         if (area > 1000.0){
             //青で囲む場合
             cv::polylines(src_img, approx, true, cv::Scalar(255, 0, 0), 2);
+            cv::polylines(line_img, approx, true, cv::Scalar(255, 0, 0), 1);
             std::stringstream sst;
             sst << "area : " << area;
             cv::putText(src_img, sst.str(), approx[0], CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(0, 128, 0));
             
             //輪郭に隣接する矩形の取得
-            cv::Rect brect = cv::boundingRect(cv::Mat(approx).reshape(2));
+//            cv::Rect brect = cv::boundingRect(cv::Mat(approx).reshape(2));
             
             
             
@@ -70,6 +72,8 @@ int main (int argc, char *argv[]){
         i++;
     }
     
+    std::cout << contours[3];
+    
     for(int j = 0; j < contours.size(); ++j) {
         //入力画像に表示する場合
         cv::drawContours(line_img, contours, j, CV_RGB(0, 0, 0), 1);
@@ -90,6 +94,14 @@ int main (int argc, char *argv[]){
     cv::imshow("fit ellipse", src_img);
     cv::imshow("bin image", bin_img);
     cv::imshow("outline image", line_img);
+    
+    std::cout << approx;
+//     svgファイルの作成
+    mi::SvgDrawer drawer ( width, height, "test1.svg");
+    drawer.setViewBox( -2, -2, 2, 2);
+    
+    drawer.PolyLine(contours[3]);
+    
     cv::waitKey(0);
     
     return 0;
