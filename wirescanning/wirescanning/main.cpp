@@ -36,9 +36,9 @@ bool CamRead(int, char**){
 int main (int argc, char *argv[]){
     
     bool cam;
-    cam = CamRead(argc,argv);
+//    cam = CamRead(argc,argv);
     
-    if(cam){
+//    if(cam){
     cv::Mat src_img = cv::imread("img.png");
     if(!src_img.data) return -1;
     
@@ -121,7 +121,7 @@ int main (int argc, char *argv[]){
 //    std::cout << approx;
 //     svgファイルの作成
     mi::SvgDrawer drawer ( width, height, "test1.svg");
-    drawer.setViewBox( -2, -2, 2, 2);
+    drawer.setViewBox( 0, 0, 20, 20);
     
     for(int i=0; i<num; i++){
         drawer.PolyLine(contours[i]);
@@ -130,6 +130,6 @@ int main (int argc, char *argv[]){
     cv::waitKey(0);
     
     return 0;
-    }
+//    }
 }
 
