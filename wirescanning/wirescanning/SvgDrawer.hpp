@@ -153,16 +153,16 @@ namespace mi
                 //スプライン曲線 作りかけ
                 void splineCurve ( const std::vector< cv::Point > polypoints) {
                     this->_fout<<"<path d=\"";
-                    SvgDrawer::Vector2d v0( polypoints[0].x * 0.01, polypoints[0].y * 0.01 );
+                    SvgDrawer::Vector2d v0( polypoints[0].x , polypoints[0].y );
                     this->convert( v0 );
                     this->_fout<<"M"<<v0.x<<","<<v0.y<<" ";
 
                     for (int i = 1; i < polypoints.size()-1; ++i){
-                        SvgDrawer::Vector2d v0( polypoints[i].x * 0.01, polypoints[i].y * 0.01 );
+                        SvgDrawer::Vector2d v0( polypoints[i].x, polypoints[i].y );
                         this->convert( v0 );
                         this->_fout<<"T"<<v0.x<<","<<v0.y<<" ";
                     }
-                    SvgDrawer::Vector2d v1( polypoints[polypoints.size()-1].x * 0.01, polypoints[polypoints.size()-1].y * 0.01 );
+                    SvgDrawer::Vector2d v1( polypoints[polypoints.size()-1].x, polypoints[polypoints.size()-1].y );
                     this->convert( v1 );
                     this->_fout<<"T"<<v1.x<<" "<<v1.y<<" z\"";
                 //                    zthis->_fout<<"\"";

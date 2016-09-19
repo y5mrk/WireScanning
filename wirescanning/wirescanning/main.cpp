@@ -11,9 +11,36 @@
 #include <vector>
 #include "SvgDrawer.hpp"
 
+bool CamRead(int, char**){
+    cv::VideoCapture cap(0); // デフォルトカメラをオープン
+    if(!cap.isOpened())  // 成功したかどうかをチェック
+        return false; // プログラム終了
+    
+    cv::Mat edges;
+    cv::namedWindow("frames",1);
+    cv::Mat frame;
+    for(;;)
+    {
+        cap >> frame; // カメラから新しいフレームを取得
+        
+        imshow("feames", frame);
+        if(cv::waitKey(30) >= 0) break;
+    }
+    // VideoCapture デストラクタにより，カメラは自動的に終了処理されます
+    
+    cv::imwrite("img.png", frame);
+    cv::destroyAllWindows();
+    return true;
+}
+
+
 int main (int argc, char *argv[]){
     
-    cv::Mat src_img = cv::imread("wire1.JPG");
+    bool cam;
+    cam = CamRead(argc,argv);
+    
+    if(cam){
+    cv::Mat src_img = cv::imread("img.png");
     if(!src_img.data) return -1;
     
     int width = src_img.cols;
@@ -30,14 +57,21 @@ int main (int argc, char *argv[]){
     // 輪郭の検出
     cv::findContours(bin_img, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
     
-    int i = 0;
+    int num = 0;
     std::vector< cv::Point > approx;
+    
+    double max_area = 0.0;
+    int max_num = 0;
     
 //    for(int i = 0; i < contours.size(); ++i) {
     for (auto contour = contours.begin(); contour != contours.end(); contour++){
     
         cv::approxPolyDP(cv::Mat(*contour), approx, 0.001 * cv::arcLength(*contour, true), true);
         double area = cv::contourArea(approx);
+        if(area > max_area){
+            max_area = area;
+            max_num = num;
+        }
         
         if (area > 1000.0){
             //青で囲む場合
@@ -57,22 +91,12 @@ int main (int argc, char *argv[]){
             
             
         }
-
+        num++;
         
-        size_t count = contours[i].size();
-        if(count < 150 || count > 1000) continue; // （小さすぎる|大きすぎる）輪郭を除外
-        
-        cv::Mat pointsf;
-        cv::Mat(contours[i]).convertTo(pointsf, CV_32F);
-        // 楕円フィッティング
-        cv::RotatedRect box = cv::fitEllipse(pointsf);
-        // 楕円の描画
-        cv::ellipse(src_img, box, cv::Scalar(0,0,255), 2, CV_AA);
-        
-        i++;
     }
     
-    std::cout << contours[3];
+    
+//    std::cout << max_area<< ", " << max_num;
     
     for(int j = 0; j < contours.size(); ++j) {
         //入力画像に表示する場合
@@ -95,15 +119,17 @@ int main (int argc, char *argv[]){
     cv::imshow("bin image", bin_img);
     cv::imshow("outline image", line_img);
     
-    std::cout << approx;
+//    std::cout << approx;
 //     svgファイルの作成
     mi::SvgDrawer drawer ( width, height, "test1.svg");
-    drawer.setViewBox( -2, -2, 2, 2);
+    drawer.setViewBox( 0, 0, 20, 20);
     
-    drawer.PolyLine(contours[3]);
-    
+    for(int i=0; i<num; i++){
+        drawer.PolyLine(contours[i]);
+    }
+        
     cv::waitKey(0);
-    
     return 0;
+    }
 }
 
