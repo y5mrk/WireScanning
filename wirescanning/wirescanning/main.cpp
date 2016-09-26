@@ -33,14 +33,52 @@ bool CamRead(int, char**){
     return true;
 }
 
+double MaxSizeX (std::vector< cv::Point > points){
+    double Xmax = 0.0;
+    for (int i = 1; i < points.size(); ++i){
+        if(points[i].x > Xmax){
+            Xmax = points[i].x;
+        }
+    }
+    return Xmax;
+}
+
+double MaxSizeY (std::vector< cv::Point > points){
+    double Ymax = 0.0;
+    for (int i = 1; i < points.size(); ++i){
+        if(points[i].y > Ymax){
+            Ymax = points[i].y;
+        }
+    }
+    return Ymax;
+}
+
+void RatioSVG (std::vector<std::vector< cv::Point >> pointsData, int _num){
+    double SVGwidth = 0.0;
+    double SVGheight = 0.0;
+    for(int i=0; i<_num; i++){
+        double sizeX = MaxSizeX(pointsData[i]);
+        double sizeY = MaxSizeY(pointsData[i]);
+        if(sizeX > SVGwidth){
+            SVGwidth = sizeX;
+        }
+        if(sizeY > SVGheight){
+            SVGheight = sizeY;
+        }
+    }
+    std::cout << SVGwidth <<std::endl;
+    std::cout << SVGheight <<std::endl;
+//    return 
+}
+
 
 int main (int argc, char *argv[]){
     
     bool cam;
-    cam = CamRead(argc,argv);
+//    cam = CamRead(argc,argv);
     
-    if(cam){
-    cv::Mat src_img = cv::imread("img.png");
+//    if(cam){
+    cv::Mat src_img = cv::imread("test.JPG");
     if(!src_img.data) return -1;
     
     int width = src_img.cols;
@@ -119,17 +157,15 @@ int main (int argc, char *argv[]){
     cv::imshow("bin image", bin_img);
     cv::imshow("outline image", line_img);
     
-//    std::cout << approx;
+//std::cout << approx;
 //     svgファイルの作成
-    mi::SvgDrawer drawer ( width, height, "test1.svg");
-    drawer.setViewBox( 0, 0, 20, 20);
+    mi::SvgDrawer drawer ( 240, 180, 1, 1, "test1.svg");
+//    drawer.setViewBox( 0, 0, 20, 20);
     
-    for(int i=0; i<num; i++){
-        drawer.PolyLine(contours[i]);
-    }
-        
+    RatioSVG(contours, num);
+    
+    
     cv::waitKey(0);
     return 0;
-    }
+//    }
 }
-

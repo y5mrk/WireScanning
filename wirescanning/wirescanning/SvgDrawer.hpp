@@ -42,14 +42,14 @@ namespace mi
                 SvgDrawer::Vector2d _bmax;
                 SvgDrawer::Vector2d _size;
         public:
-                SvgDrawer( const int width, const int height, const std::string& filename = std::string( "draw.svg" ) ) {
+                SvgDrawer( const int width, const int height, const int view_w, const int view_h, const std::string& filename = std::string( "draw.svg" ) ) {
                         this->init();
                         this->_size.x = width;
                         this->_size.y = height;
-                        this->setViewBox( 0, 0, width, height );
+                        this->setViewBox( 0, 0, view_w, view_h );
                         this->_fout.open( filename.c_str() );
 
-                        this->_fout<<"<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width= \""<<width<<"\" height=\""<<height<<"\">"<<std::endl;
+                    this->_fout<<"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMinYMin slice\" width= \""<<width<<"mm\" height=\""<<height<<"mm\" viewBox=\"0 0 "<<view_w<<" "<<view_h<<"\" x=\"0mm\" y=\"0mm\" overflow=\"visible\" >"<<std::endl;
                         return;
                 }
 
@@ -137,11 +137,11 @@ namespace mi
                     this->_fout<<"<polyline points=\"";
                     for (int i = 0; i < polypoints.size()-1; ++i){
                         SvgDrawer::Vector2d v0( polypoints[i].x * 0.01, polypoints[i].y * 0.01 );
-                        this->convert( v0 );
+//                        this->convert( v0 );
                         this->_fout<<v0.x<<" "<<v0.y<<",";
                     }
                     SvgDrawer::Vector2d v0( polypoints[polypoints.size()-1].x * 0.01, polypoints[polypoints.size()-1].y * 0.01 );
-                    this->convert( v0 );
+//                    this->convert( v0 );
                     this->_fout<<v0.x<<" "<<v0.y<<"\"";
 //                    zthis->_fout<<"\"";
                     if ( this->_stroke_dashed > 0 ) this->_fout<<" stroke-dasharray=\""<<this->_stroke_dashed<<"\"";
