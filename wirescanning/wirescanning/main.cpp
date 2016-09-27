@@ -33,14 +33,61 @@ bool CamRead(int, char**){
     return true;
 }
 
+double MaxSizeX (std::vector< cv::Point > points){
+    double Xmax = 0.0;
+    for (int i = 1; i < points.size(); ++i){
+        if(points[i].x > Xmax){
+            Xmax = points[i].x;
+        }
+    }
+    return Xmax;
+}
+
+double MaxSizeY (std::vector< cv::Point > points){
+    double Ymax = 0.0;
+    for (int i = 1; i < points.size(); ++i){
+        if(points[i].y > Ymax){
+            Ymax = points[i].y;
+        }
+    }
+    return Ymax;
+}
+
+double RatioSVG (std::vector<std::vector< cv::Point >> pointsData, int _num, double SVGViewWidth, double SVGViewHeight){
+    double ratioX;
+    double ratioY;
+    double ratio;
+    double SVGImageWidth = 0.0;
+    double SVGImageHeight = 0.0;
+    for(int i=0; i<_num; i++){
+        double sizeX = MaxSizeX(pointsData[i]);
+        double sizeY = MaxSizeY(pointsData[i]);
+        if(sizeX > SVGImageWidth){
+            SVGImageWidth = sizeX;
+        }
+        if(sizeY > SVGImageHeight){
+            SVGImageHeight = sizeY;
+        }
+    }
+    ratioX = SVGImageWidth / SVGViewWidth;
+    ratioY = SVGImageHeight/ SVGViewHeight;
+    if(ratioX > ratioY){
+        ratio = ratioX;
+    }else{
+        ratio = ratioY;
+    }
+        
+    return ratio;
+}
+
 
 int main (int argc, char *argv[]){
     
     bool cam;
-    cam = CamRead(argc,argv);
+//    cam = CamRead(argc,argv);
     
-    if(cam){
-    cv::Mat src_img = cv::imread("img.png");
+//    if(cam){
+    cv::Mat src_img = cv::imread("test.JPG");
     if(!src_img.data) return -1;
     
     int width = src_img.cols;
@@ -119,17 +166,18 @@ int main (int argc, char *argv[]){
     cv::imshow("bin image", bin_img);
     cv::imshow("outline image", line_img);
     
-//    std::cout << approx;
+//std::cout << approx;
 //     svgファイルの作成
-    mi::SvgDrawer drawer ( width, height, "test1.svg");
-    drawer.setViewBox( 0, 0, 20, 20);
+    mi::SvgDrawer drawer ( 240, 180, 240, 180, "test1.svg");
+//    drawer.setViewBox( 0, 0, 20, 20);
+    
+    double convertSVGRatio = RatioSVG(contours, num, 240, 180);
     
     for(int i=0; i<num; i++){
-        drawer.PolyLine(contours[i]);
+            drawer.PolyLine(contours[i], convertSVGRatio);
     }
-        
+    
     cv::waitKey(0);
     return 0;
-    }
+//    }
 }
-
