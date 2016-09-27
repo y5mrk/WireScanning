@@ -133,14 +133,14 @@ namespace mi
 
                 }
             
-                void PolyLine ( const std::vector< cv::Point > polypoints) {
+                void PolyLine ( const std::vector< cv::Point > polypoints, double SVGratio) {
                     this->_fout<<"<polyline points=\"";
                     for (int i = 0; i < polypoints.size()-1; ++i){
-                        SvgDrawer::Vector2d v0( polypoints[i].x * 0.01, polypoints[i].y * 0.01 );
+                        SvgDrawer::Vector2d v0( polypoints[i].x / SVGratio, polypoints[i].y / SVGratio );
 //                        this->convert( v0 );
                         this->_fout<<v0.x<<" "<<v0.y<<",";
                     }
-                    SvgDrawer::Vector2d v0( polypoints[polypoints.size()-1].x * 0.01, polypoints[polypoints.size()-1].y * 0.01 );
+                    SvgDrawer::Vector2d v0( polypoints[polypoints.size()-1].x / SVGratio , polypoints[polypoints.size()-1].y / SVGratio );
 //                    this->convert( v0 );
                     this->_fout<<v0.x<<" "<<v0.y<<"\"";
 //                    zthis->_fout<<"\"";

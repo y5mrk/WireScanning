@@ -53,22 +53,31 @@ double MaxSizeY (std::vector< cv::Point > points){
     return Ymax;
 }
 
-void RatioSVG (std::vector<std::vector< cv::Point >> pointsData, int _num){
-    double SVGwidth = 0.0;
-    double SVGheight = 0.0;
+double RatioSVG (std::vector<std::vector< cv::Point >> pointsData, int _num, double SVGViewWidth, double SVGViewHeight){
+    double ratioX;
+    double ratioY;
+    double ratio;
+    double SVGImageWidth = 0.0;
+    double SVGImageHeight = 0.0;
     for(int i=0; i<_num; i++){
         double sizeX = MaxSizeX(pointsData[i]);
         double sizeY = MaxSizeY(pointsData[i]);
-        if(sizeX > SVGwidth){
-            SVGwidth = sizeX;
+        if(sizeX > SVGImageWidth){
+            SVGImageWidth = sizeX;
         }
-        if(sizeY > SVGheight){
-            SVGheight = sizeY;
+        if(sizeY > SVGImageHeight){
+            SVGImageHeight = sizeY;
         }
     }
-    std::cout << SVGwidth <<std::endl;
-    std::cout << SVGheight <<std::endl;
-//    return 
+    ratioX = SVGImageWidth / SVGViewWidth;
+    ratioY = SVGImageHeight/ SVGViewHeight;
+    if(ratioX > ratioY){
+        ratio = ratioX;
+    }else{
+        ratio = ratioY;
+    }
+        
+    return ratio;
 }
 
 
@@ -159,11 +168,14 @@ int main (int argc, char *argv[]){
     
 //std::cout << approx;
 //     svgファイルの作成
-    mi::SvgDrawer drawer ( 240, 180, 1, 1, "test1.svg");
+    mi::SvgDrawer drawer ( 240, 180, 240, 180, "test1.svg");
 //    drawer.setViewBox( 0, 0, 20, 20);
     
-    RatioSVG(contours, num);
+    double convertSVGRatio = RatioSVG(contours, num, 240, 180);
     
+    for(int i=0; i<num; i++){
+            drawer.PolyLine(contours[i], convertSVGRatio);
+    }
     
     cv::waitKey(0);
     return 0;
